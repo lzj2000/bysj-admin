@@ -1,0 +1,10 @@
+.logo{
+    line-height: 40px;
+    color:white;
+    background-color: rgba(255, 255, 255,0.3);
+    font-size: 16px;
+    margin: 10px;
+    margin-top: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+}
