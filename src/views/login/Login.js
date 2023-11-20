@@ -5,10 +5,14 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import Particles from "react-particles";
 import { loadSlim } from "tsparticles-slim";
 import { getUser } from '../../api/user'
+import { useDispatch} from 'react-redux';
+import { getUserInfo } from "../../store/features/user";
+
 import './Login.css'
 
 export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [messageApi, contextHolder] = message.useMessage();
   const onFinish = async (values) => {
     const res = await getUser(values);
@@ -16,8 +20,9 @@ export default function Login() {
       if (res.data.user_state === '1') {
         messageApi.open({
           type: 'success',
-          content: res.message,
+          content: '登录成功',
         });
+        dispatch(getUserInfo({value: res.data}))
         navigate('/')
       } else {
         messageApi.open({

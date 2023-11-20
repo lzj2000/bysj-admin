@@ -21,7 +21,7 @@ function ToPage() {
   useEffect(() => {
     // 加载完组件之后执行这里的代码
     navigate("/home");
-    message.warning("您已经登录过了！");
+    message.warning("您已成功登录！");
   }, [navigate])
   return <div></div>
 }

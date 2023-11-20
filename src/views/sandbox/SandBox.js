@@ -8,19 +8,19 @@ const { Content } = Layout;
 const App = () => {
   const [collapsed, setCollapsed] = useState(false);
   const change = () => {
-    console.log(999);
     setCollapsed(!collapsed)
-}
+  }
   const {
     token: { colorBgContainer },
   } = theme.useToken();
   return (
     <Layout>
       <SideMenu collapsed={collapsed}></SideMenu>
-      <Layout>
+      <Layout style={{ overflow: 'auto', height: '100vh' }}>
         <TopHeader collapsed={collapsed} change={change}></TopHeader>
         <Content
           style={{
+            overflow: 'auto', height: '100vh',
             margin: '24px 16px',
             padding: 24,
             minHeight: 280,

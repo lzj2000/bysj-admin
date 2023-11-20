@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css'
 import { Layout, Menu } from 'antd';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   UserOutlined
 } from '@ant-design/icons';
@@ -76,24 +76,57 @@ const menuList = [
     icon: <UserOutlined />,
     children: [
       {
-        key: "/order/order",
-        label: "订单列表",
+        key: "/order/delivery",
+        label: "快递代取",
+        icon: <UserOutlined />
+      },
+      {
+        key: "/order/errand",
+        label: "校园跑腿",
+        icon: <UserOutlined />
+      },
+      {
+        key: "/order/repair",
+        label: "上门维修",
+        icon: <UserOutlined />
+      },
+      {
+        key: "/order/other",
+        label: "其他服务",
         icon: <UserOutlined />
       }
     ]
   }
 ]
 
+const searchUrlKey = (key) => {
+  let arrObj = []
+
+  const demoFn = (_arr) => {
+    _arr.forEach(n => {
+      if (key.includes(n.key)) {
+        arrObj.push(n.key)
+        if (n.children) {
+          demoFn(n.children)
+        }
+      }
+    })
+  }
+  demoFn(menuList)
+  return arrObj
+}
+
 export default function SideMenu(props) {
   const navigate = useNavigate();
+  const { pathname } = useLocation()
   let { collapsed } = props
+  let pathKey = searchUrlKey(pathname)
   return (
-    <Sider trigger={null} collapsible collapsed={collapsed}>
-      <div className="logo" >校园服务平台管理系统</div>
+    <Sider trigger={null} collapsible collapsed={collapsed}  width={200} style={{ background: '#fff', overflow: 'auto', height: '100vh'}}>
       <Menu
-        theme="dark"
+        theme="light"
         mode="inline"
-        defaultSelectedKeys={['1']}
+        defaultSelectedKeys={pathKey}
         onClick={(e) => {
           navigate(e.key)
         }}
