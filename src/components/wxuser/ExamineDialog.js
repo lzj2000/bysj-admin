@@ -140,7 +140,6 @@ export default function ExamineDialog({ visible, onCancel, selected, onClick }) 
                             <Input />
                         </Form.Item>
                     </Form>
-
                 </div>
             </Modal>
         </>

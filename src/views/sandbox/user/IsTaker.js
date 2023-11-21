@@ -82,7 +82,6 @@ export default function IsTaker() {
   }
   const fetchData = async () => {
     const result = await examine();
-    console.log(result.data);
     setData(result.data);
   }
   const onClick = (val) => {

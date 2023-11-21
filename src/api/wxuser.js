@@ -7,3 +7,5 @@ export const getexamine = (user_id) => axios.get(`/wxuser/getexamine?user_id=${u
 export const byApplication = (data) => axios.post('/wxuser/byApplication',data);
 
 export const notApproved = (data) => axios.post('/wxuser/notApproved',data);
+
+export const getAllOrderReceiver = (data) => axios.get(`/wxuser/getAllOrderReceiver?pageSize=${data.pageSize}&current=${data.current}`);
