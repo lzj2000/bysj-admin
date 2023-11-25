@@ -1,22 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { Breadcrumb, Table, Avatar, Space, Input, Button, Tooltip, Pagination } from 'antd';
-import { SearchOutlined, UserOutlined } from '@ant-design/icons';
+import { Breadcrumb, Table, Avatar, Space, Button } from 'antd';
 import { useSelector } from 'react-redux';
 import './list.scss';
-import { getAllOrderReceiver } from "../../../api/wxuser";
+import { getAllOrderReceiver, getOrderQuantity, getSchoolOrderQuantity } from "../../../api/wxuser";
+import TakerDialog from '../../../components/wxuser/TakerDialog';
+
 
 export default function TakerList() {
   const { userinfo } = useSelector((store) => store.user);
   const [data, setData] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selected, setSelected] = useState({
+    all: '',
+    year: '',
+    month: ''
+  });
   const [pageSize, setPageSize] = useState(8);
   const [current, setCurrent] = useState(1);
-  const [total, setTotal] = useState(0);
-
+  const pagination = {
+    pageSize: pageSize,// 默认每页显示条数
+    defaultCurrent: current,// 默认当前页数
+    pageSizeOptions: [3, 5, 8],
+    showSizeChanger: true,
+    onShowSizeChange: (current, pageSize) => {
+      setPageSize(pageSize);
+      setCurrent(current);
+    },
+  }
   const columns = [
     {
       title: '姓名',
       dataIndex: 'name',
       key: 'name',
+      filters: data.map(item => ({ text: item.name, value: item.name })),
+      filterSearch: true,
+      onFilter: (value, record) => record.name.startsWith(value),
     },
     {
       title: '电话',
@@ -39,49 +57,38 @@ export default function TakerList() {
       ),
     },
     {
-      title: '总完成量',
-      dataIndex: 'all',
-      key: 'all',
-    },
-    {
-      title: '本年完成量',
-      dataIndex: 'year',
-      key: 'year',
-    },
-    {
-      title: '本月完成量',
-      dataIndex: 'month',
-      key: 'month',
+      title: '操作',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          <Button type="link" onClick={() => handleShowModal(record)}>
+            查看数据
+          </Button>
+        </Space>
+      ),
     },
   ];
-
-  const onShowSizeChange = (current, pageSize) => {
-    setPageSize(pageSize);
-    setCurrent(current);
-  };
-
-  const onChange = (current, pageSize) => {
-    setPageSize(pageSize);
-    setCurrent(current);
-  };
+  const handleShowModal = async (info) => {
+    if (userinfo.school) {
+      setShowModal(true);
+      let res = await getSchoolOrderQuantity({user_id:info.id,school:userinfo.school});
+      setSelected(res.data)
+    } else {
+      setShowModal(true);
+      let res = await getOrderQuantity({user_id:info.id});
+      setSelected(res.data)
+    }
+  }
 
   const fetchData = async () => {
-    if (userinfo.school) {
-      console.log(userinfo.school);
-    } else {
-      let res = await getAllOrderReceiver({
-        pageSize: pageSize,
-        current: current
-      });
-      setTotal(res.pagination.total)
-      setData(res.data);
-    }
+    let res = await getAllOrderReceiver();
+    setData(res.data);
   };
 
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize,current]);
+  }, []);
 
   return (
     <div>
@@ -95,36 +102,22 @@ export default function TakerList() {
           },
         ]}
       />
-      <div style={{ marginTop: '20px' }} className="search">
-        <Input placeholder="请输入姓名" prefix={<UserOutlined />} style={{
-          width: '20%',
-          marginRight: '5px'
-        }} />
-        <Tooltip title="搜索">
-          <Button shape="circle" icon={<SearchOutlined />} />
-        </Tooltip>
-      </div>
       <Table
+        style={{ marginTop: '20px' }}
         columns={columns}
         dataSource={data}
+        pagination={pagination}
         rowKey='id'
         bordered
-        size="middle"
-        pagination={false}
         scroll={{
           x: 'calc(400px + 50%)',
           y: 400,
         }}
       />
-      <Pagination style={{ marginTop: '20px' }}
-        showSizeChanger
-        pageSizeOptions={[3, 5, 8]}
-        pageSize={pageSize}
-        current={current}
-        onShowSizeChange={onShowSizeChange}
-        onChange={onChange}
-        defaultCurrent={1}
-        total={total}
+      <TakerDialog
+        visible={showModal}
+        onCancel={() => setShowModal(false)}
+        selected={selected}
       />
     </div>
   );

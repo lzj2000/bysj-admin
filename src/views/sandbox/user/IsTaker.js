@@ -17,7 +17,18 @@ export default function IsTaker() {
     state: '',
     auditor: ''
   });
-
+  const [pageSize, setPageSize] = useState(8);
+  const [current, setCurrent] = useState(1);
+  const pagination = {
+    pageSize: pageSize,// 默认每页显示条数
+    defaultCurrent: current,// 默认当前页数
+    pageSizeOptions: [3, 5, 8],
+    showSizeChanger: true,
+    onShowSizeChange: (current, pageSize) => {
+      setPageSize(pageSize);
+      setCurrent(current);
+    },
+  }
   const columns = [
     {
       title: '姓名',
@@ -104,11 +115,7 @@ export default function IsTaker() {
         ]}
       />
       <Table style={{ marginTop: '20px' }} columns={columns} dataSource={data} rowKey='id' bordered
-        size="middle"
-        pagination={{
-          pageSize: 8,// 默认每页显示条数
-          defaultCurrent: 1,// 默认当前页数
-        }}
+        pagination={pagination}
         scroll={{
           x: 'calc(400px + 50%)',
           y: 400,
