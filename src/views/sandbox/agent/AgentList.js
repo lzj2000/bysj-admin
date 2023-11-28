@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { Breadcrumb, Table, Space, Button, Pagination, Tag } from 'antd';
-import { list } from "../../../api/user";
+import { Breadcrumb, Table, Space, Button, Pagination, Tag, Popconfirm, message, Input } from 'antd';
+import { list, deleteUser, modifyState, lists } from "../../../api/user";
+import { cancel } from "../../../util/common";
+import AgentDialog from '../../../components/agent/AgentDialog';
 
 export default function AgentList() {
   const [data, setData] = useState([]);
+  const [value, setValue] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selected, setSelected] = useState({
+    _id: 0,
+    username: '',
+    pwd: '',
+    a_id: 0,
+    dtype: 0,
+    user_state: 0,
+    phone: ''
+  });
   const [pageSize, setPageSize] = useState(8);
   const [current, setCurrent] = useState(1);
   const [total, setTotal] = useState(0);
@@ -26,7 +39,7 @@ export default function AgentList() {
       key: 'dtype',
       width: 180,
       render: (_, { dtype }) => {
-        let color = dtype === 1 ? 'green' : 'geekblue';
+        let color = dtype === 1 ? 'gold' : 'geekblue';
         let text = dtype === 1 ? '管理员' : '校园代理';
         return (
           <Tag color={color}>
@@ -69,18 +82,54 @@ export default function AgentList() {
           <Button type="link" onClick={() => handleShowModal(record)}>
             编辑
           </Button>
-          <Button type="link" onClick={() => handleShowModal(record)}>
-            停用
-          </Button>
-          <Button type="link" onClick={() => handleShowModal(record)}>
-            删除
-          </Button>
+          {record.dtype === 2 && <><Popconfirm
+            title="确认停用该代理商？"
+            onConfirm={() => editingStatus(record._id, record.user_state)}
+            onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link">{record.user_state === 1 ? '停用' : '启用'}</Button>
+          </Popconfirm>
+            <Popconfirm
+              title="确认删除该代理商？"
+              onConfirm={() => deleteU(record.a_id)}
+              onCancel={cancel}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button type="link">删除</Button>
+            </Popconfirm></>}
+
         </Space>
       ),
     },
   ];
+  const editingStatus = async (id, state) => {
+    console.log(id, state);
+    let new_state = state === 1 ? 2 : 1;
+    let res = await modifyState({ id: id, state: new_state })
+    console.log(res);
+    if (res.status) {
+      message.success(res.message);
+      fetchData();
+    } else {
+      message.error(res.message);
+    }
+  }
+  const deleteU = async (id) => {
+    let res = await deleteUser({ id: id })
+    console.log(res);
+    if (res.status) {
+      message.success(res.message);
+      fetchData();
+    } else {
+      message.error(res.message);
+    }
+  }
   const handleShowModal = async (info) => {
-    console.log(555);
+    setSelected(info);
+    setShowModal(true);
   }
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
@@ -90,18 +139,33 @@ export default function AgentList() {
     setPageSize(pageSize);
     setCurrent(current);
   };
+  const onClick = (val) => {
+    fetchData();
+  }
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
   const fetchData = async () => {
-    let res = await list({
-      pageSize: pageSize,
-      current: current
-    });
+    let res;
+    if(value){
+      res = await lists({
+        pageSize: pageSize,
+        current: current,
+        username: value
+      });
+    }else{
+      res = await list({
+        pageSize: pageSize,
+        current: current
+      });
+    }
     setTotal(res.pagination.total)
     setData(res.data);
   };
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, current]);
+  }, [pageSize, current, value]);
   return (
     <div>
       <Breadcrumb
@@ -114,8 +178,9 @@ export default function AgentList() {
           },
         ]}
       />
+      <Input placeholder="请输入用户名" value={value} onChange={handleChange} style={{ marginTop: '20px', width: '250px' }} />
       <Table
-        style={{ height: '450px', marginTop: '20px' }}
+        style={{ height: '450px', marginTop: '10px' }}
         columns={columns}
         dataSource={data}
         rowKey='a_id'
@@ -139,6 +204,12 @@ export default function AgentList() {
           total={total}
         />
       </div>
+      <AgentDialog
+        visible={showModal}
+        onCancel={() => setShowModal(false)}
+        selected={selected}
+        onClick={onClick}
+      />
     </div>
   )
 }

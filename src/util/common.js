@@ -21,3 +21,7 @@ export function parseTime(timestamp, format) {
 export function sortByField(arr, field) {
     return arr.sort((a, b) => a[field] - b[field]);
 }
+//
+export function cancel(e) {
+    console.log(e);
+  };

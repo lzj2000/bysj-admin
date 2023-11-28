@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Button, Form, Input, message, Breadcrumb } from 'antd';
+import { add } from "../../../api/user";
 import './AddAgent.scss'
 
 export default function AddAgent() {
@@ -13,10 +14,17 @@ export default function AddAgent() {
       });
       return
     }
-    messageApi.open({
-      type: 'success',
-      content: '111',
-    });
+    let res = await add(values)
+    if(res.status){
+      messageApi.open({
+        type: 'success',
+        content: res.message,
+      });
+      addform.current.resetFields();
+    }else{
+      message.error(res.message);
+    }
+    
   };
   return (
     <div className='box'>
@@ -58,6 +66,15 @@ export default function AddAgent() {
               },
             ]}
           >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="手机号"
+            name="phone"
+            rules={[
+              { required: true, message: '请输入手机号!', },
+              { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }
+            ]} >
             <Input />
           </Form.Item>
           <Form.Item

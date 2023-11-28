@@ -4,18 +4,25 @@ import './index.css';
 import App from './App';
 import './util/http';
 import { BrowserRouter } from "react-router-dom"
+import { ConfigProvider } from 'antd'
+import zhCN from "antd/es/locale/zh_CN";
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
 
 // 状态管理
 import { Provider } from "react-redux"
 import { persistor, store } from './store';
 import { PersistGate } from 'redux-persist/integration/react';
 
+dayjs.locale('zh-cn');
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <BrowserRouter>
-        <App />
+        <ConfigProvider locale={zhCN}>
+          <App />
+        </ConfigProvider>
       </BrowserRouter>
     </PersistGate>
   </Provider>

@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { Breadcrumb, Table, Space, Button, Pagination } from 'antd';
-import { list } from "../../../api/area";
-import { parseTime, sortByField } from "../../../util/common";
+import { Breadcrumb, Table, Space, Button, Pagination, Popconfirm, message, Input } from 'antd';
+import { list, deleteArea, lists, getOrderQuantity } from "../../../api/area";
+import { parseTime, sortByField, cancel } from "../../../util/common";
+import AddressDialog from '../../../components/address/AddressDialog';
+
 
 export default function AddressList() {
   const [data, setData] = useState([]);
+  const [value, setValue] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selected, setSelected] = useState({
+    all: '',
+    year: '',
+    month: ''
+  });
   const [pageSize, setPageSize] = useState(8);
   const [current, setCurrent] = useState(1);
   const [total, setTotal] = useState(0);
@@ -47,15 +56,33 @@ export default function AddressList() {
           <Button type="link" onClick={() => handleShowModal(record)}>
             查看数据
           </Button>
-          <Button type="link" onClick={() => handleShowModal(record)}>
-            删除
-          </Button>
+          <Popconfirm
+            title="确认删除该地址？"
+            onConfirm={() => deleteA(record.a_id)}
+            onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link">删除</Button>
+          </Popconfirm>
         </Space>
       ),
     },
   ];
   const handleShowModal = async (info) => {
-    console.log(555);
+    setShowModal(true);
+    let res = await getOrderQuantity({ school: info.name });
+    setSelected(res.data)
+  }
+  const deleteA = async (id) => {
+    let res = await deleteArea({ id: id })
+    console.log(res);
+    if (res.status) {
+      message.success(res.message);
+      fetchData();
+    } else {
+      message.error(res.message);
+    }
   }
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
@@ -65,18 +92,30 @@ export default function AddressList() {
     setPageSize(pageSize);
     setCurrent(current);
   };
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
   const fetchData = async () => {
-    let res = await list({
-      pageSize: pageSize,
-      current: current
-    });
+    let res;
+    if (value) {
+      res = await lists({
+        pageSize: pageSize,
+        current: current,
+        username: value
+      });
+    } else {
+      res = await list({
+        pageSize: pageSize,
+        current: current
+      });
+    }
     setTotal(res.pagination.total)
     setData(sortByField(res.data, 'a_id'));
   };
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, current]);
+  }, [pageSize, current, value]);
   return (
     <div>
       <Breadcrumb
@@ -89,8 +128,9 @@ export default function AddressList() {
           },
         ]}
       />
+      <Input placeholder="请输入学校" value={value} onChange={handleChange} style={{ marginTop: '20px', width: '250px' }} />
       <Table
-        style={{ height: '450px',marginTop: '20px' }}
+        style={{ height: '450px', marginTop: '10px' }}
         columns={columns}
         dataSource={data}
         rowKey='a_id'
@@ -114,6 +154,11 @@ export default function AddressList() {
           total={total}
         />
       </div>
+      <AddressDialog
+        visible={showModal}
+        onCancel={() => setShowModal(false)}
+        selected={selected}
+      />
     </div>
   )
 }

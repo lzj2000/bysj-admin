@@ -17,7 +17,7 @@ export default function Login() {
   const onFinish = async (values) => {
     const res = await getUser(values);
     if (res.status) {
-      if (res.data.user_state === '1') {
+      if (res.data.user_state === 1) {
         messageApi.open({
           type: 'success',
           content: '登录成功',

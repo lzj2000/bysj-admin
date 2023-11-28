@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Breadcrumb, Table, Avatar, Space, Button, Pagination } from 'antd';
+import { Breadcrumb, Table, Avatar, Space, Pagination } from 'antd';
 import { getWxuser } from "../../../api/wxuser";
 
 
@@ -28,22 +28,8 @@ export default function UserList() {
           <Avatar src={record.avatar_url} />
         </Space>
       ),
-    },
-    {
-      title: '操作',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <Button type="link" onClick={() => handleShowModal(record)}>
-            查看数据
-          </Button>
-        </Space>
-      ),
-    },
+    }
   ];
-  const handleShowModal = async (info) => {
-    console.log(555);
-  }
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
     setCurrent(current);

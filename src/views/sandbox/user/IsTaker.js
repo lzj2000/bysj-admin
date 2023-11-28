@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Breadcrumb, Table, Space, Tag } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Breadcrumb, Table, Space, Tag, Button } from 'antd';
 import { examine } from "../../../api/wxuser";
 import ExamineDialog from '../../../components/wxuser/ExamineDialog';
 
@@ -82,7 +81,7 @@ export default function IsTaker() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <SearchOutlined onClick={() => handleShowModal(record)} />
+          <Button type="link" onClick={() => handleShowModal(record)}>审核</Button>
         </Space>
       ),
     },
