@@ -14,7 +14,6 @@ export function parseTime(timestamp, format) {
     format = format.replace('{h}', hour);
     format = format.replace('{i}', minute);
     format = format.replace('{s}', second);
-
     return format;
 }
 //排序
@@ -24,4 +23,4 @@ export function sortByField(arr, field) {
 //
 export function cancel(e) {
     console.log(e);
-  };
+};

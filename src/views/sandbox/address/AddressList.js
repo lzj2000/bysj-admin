@@ -76,7 +76,6 @@ export default function AddressList() {
   }
   const deleteA = async (id) => {
     let res = await deleteArea({ id: id })
-    console.log(res);
     if (res.status) {
       message.success(res.message);
       fetchData();

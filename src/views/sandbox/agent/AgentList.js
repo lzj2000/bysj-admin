@@ -93,7 +93,7 @@ export default function AgentList() {
           </Popconfirm>
             <Popconfirm
               title="确认删除该代理商？"
-              onConfirm={() => deleteU(record.a_id)}
+              onConfirm={() => deleteU(record._id)}
               onCancel={cancel}
               okText="Yes"
               cancelText="No"
@@ -106,10 +106,8 @@ export default function AgentList() {
     },
   ];
   const editingStatus = async (id, state) => {
-    console.log(id, state);
     let new_state = state === 1 ? 2 : 1;
     let res = await modifyState({ id: id, state: new_state })
-    console.log(res);
     if (res.status) {
       message.success(res.message);
       fetchData();
@@ -119,7 +117,6 @@ export default function AgentList() {
   }
   const deleteU = async (id) => {
     let res = await deleteUser({ id: id })
-    console.log(res);
     if (res.status) {
       message.success(res.message);
       fetchData();

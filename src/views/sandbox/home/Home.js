@@ -1,5 +1,7 @@
 import React from 'react'
 import { Breadcrumb } from 'antd';
+import Cards from './cards/Cards';
+import Sale from './sale/Sale';
 
 export default function Home() {
   return (
@@ -14,7 +16,10 @@ export default function Home() {
           },
         ]}
       />
-      9995
+      <div style={{ marginTop: "10px" }}>
+        <Cards />
+        <Sale />
+      </div>
     </div>
   )
 }

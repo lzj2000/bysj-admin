@@ -29,7 +29,7 @@ export default function TakerList() {
   }
   const columns = [
     {
-      title: '姓名',
+      title: '姓名', 
       dataIndex: 'name',
       key: 'name',
       filters: data.map(item => ({ text: item.name, value: item.name })),
@@ -45,6 +45,9 @@ export default function TakerList() {
       title: '昵称',
       dataIndex: 'nick_name',
       key: 'nick_name',
+      filters: data.map(item => ({ text: item.nick_name, value: item.nick_name })),
+      filterSearch: true,
+      onFilter: (value, record) => record.nick_name.startsWith(value),
     },
     {
       title: '头像',
